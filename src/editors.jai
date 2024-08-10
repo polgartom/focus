@@ -1250,6 +1250,8 @@ get_lang_from_path :: (full_path: string) -> Buffer.Lang {
         case "html";            lang = .Html;
         case "htm";             lang = .Html;
         case "xhtml";           lang = .Html;
+        case "css";             lang = .Css;
+        case "scss";            lang = .Css;
 
         case "xml";             lang = .Xml;
         case "xsd";             lang = .Xml;
@@ -1259,6 +1261,10 @@ get_lang_from_path :: (full_path: string) -> Buffer.Lang {
         case "vcproj";          lang = .Xml;
         case "vcxproj";         lang = .Xml;
         case "csproj";          lang = .Xml;
+
+        case;
+            // Files named `.focus_config` are assumed to have no extension
+            if equal_nocase(basename_with_extension, ".focus-config") then lang = .Focus_Config;
     }
 
     if equal_nocase(basename_with_extension, "FOCUS-CHANGELOG.txt") then lang = .Todo;
@@ -3090,6 +3096,7 @@ toggle_comment :: (editor: *Editor, buffer: *Buffer, is_fallback := false) {
             comment = "#";
 
         // Single-line comments are not supported, fallback to multi-line comment
+        case .Css;      #through;
         case .Xml;      #through;
         case .Html;     #through;
         case .Uxntal;   #through;
@@ -3281,6 +3288,7 @@ toggle_block_comment :: (editor: *Editor, buffer: *Buffer, is_fallback := false)
         case .Jai;    #through;
         case .C;      #through;
         case .Cpp;    #through;
+        case .Css;    #through;
         case .CSharp; #through;
         case .Glsl;   #through;
         case .Hlsl;   #through;

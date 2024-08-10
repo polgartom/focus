@@ -53,6 +53,7 @@ get_next_token :: (using tokenizer: *Tokenizer) -> Token {
         case #char "<";  parse_less_than             (tokenizer, *token);
         case #char ">";  parse_greater_than          (tokenizer, *token);
         case #char "!";  parse_bang                  (tokenizer, *token);
+        case #char "`";  parse_raw_string_literal    (tokenizer, *token);
         case #char "\""; parse_string_literal        (tokenizer, *token);
         case #char "'";  parse_char_literal          (tokenizer, *token);
         case #char "/";  parse_slash_or_comment      (tokenizer, *token);
@@ -73,7 +74,6 @@ get_next_token :: (using tokenizer: *Tokenizer) -> Token {
         case #char "]";  token.type = .punctuation; token.punctuation = .r_bracket; t += 1;
 
         case #char "~";  token.type = .operation;   token.operation   = .tilde;     t += 1;
-        case #char "`";  token.type = .operation;   token.operation   = .backtick;  t += 1;
 
         case;            token.type = .invalid; t += 1;
     }
@@ -291,6 +291,18 @@ parse_bang :: (using tokenizer: *Tokenizer, token: *Token) {
             token.operation = .bang_equal;
             t += 1;
     }
+}
+
+parse_raw_string_literal :: (using tokenizer: *Tokenizer, token: *Token) {
+    token.type = .raw_string;
+
+    t += 1;
+    while t < max_t && << t != #char "`" {
+        t += 1;
+    }
+    if t >= max_t return;
+
+    t += 1;
 }
 
 parse_string_literal :: (using tokenizer: *Tokenizer, token: *Token) {
